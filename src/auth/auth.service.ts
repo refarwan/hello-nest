@@ -5,12 +5,14 @@ import { PrismaService } from 'src/prisma.service'
 import { JwtService } from '@nestjs/jwt'
 import { User } from '@prisma/client'
 import { DateTime } from 'luxon'
+import { ConfigService } from '@nestjs/config'
 
 @Injectable()
 export class AuthService {
 	constructor(
 		private prisma: PrismaService,
 		private jwtService: JwtService,
+		private configService: ConfigService,
 	) {}
 
 	async loginFindUser(usernameOrEmail: string): Promise<null | User> {
@@ -24,8 +26,9 @@ export class AuthService {
 	}
 
 	createAccessToken(payload: {}) {
+		console.log(this.configService.get<string>('accessTokenSecret'))
 		const accessToken = this.jwtService.sign(payload, {
-			secret: process.env.ACCESS_TOKEN_SECRET,
+			secret: this.configService.get<string>('accessTokenSecret'),
 			expiresIn: '1m',
 		})
 		return accessToken
@@ -33,7 +36,7 @@ export class AuthService {
 
 	createRefreshToken(payload: {}) {
 		const refreshToken = this.jwtService.sign(payload, {
-			secret: process.env.REFRESH_TOKEN_SECRET,
+			secret: this.configService.get<string>('refreshTokenSecret'),
 			expiresIn: '30d',
 		})
 
