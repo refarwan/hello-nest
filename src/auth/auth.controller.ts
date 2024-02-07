@@ -16,12 +16,13 @@ import { LoginDto } from './dto/login.dto'
 import { compareSync } from 'bcrypt'
 
 import { Request, Response } from 'express'
-import { AuthGuard } from './auth.guard'
+import { Public } from 'src/config/configuration'
 
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
+	@Public()
 	@Post('')
 	@HttpCode(200)
 	async login(
@@ -56,6 +57,7 @@ export class AuthController {
 		}
 	}
 
+	@Public()
 	@Delete()
 	delete(
 		@Req() request: Request,
@@ -74,6 +76,7 @@ export class AuthController {
 		}
 	}
 
+	@Public()
 	@Get('new-token')
 	async newToken(@Req() request: Request) {
 		const refreshToken: undefined | string = request.cookies.refresh_token
@@ -87,11 +90,5 @@ export class AuthController {
 		return {
 			access_token: newToken,
 		}
-	}
-
-	@UseGuards(AuthGuard)
-	@Get('guard')
-	guard(@Req() request) {
-		return request.user
 	}
 }

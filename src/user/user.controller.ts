@@ -12,15 +12,16 @@ import {
 import { UserService } from './user.service'
 import { CreateUserDto } from './dto/create-user.dto'
 
-import { AuthGuard } from 'src/auth/auth.guard'
 import { UpdatePasswordDto } from './dto/update-password.dto'
 
 import { compareSync } from 'bcrypt'
+import { Public } from 'src/config/configuration'
 
 @Controller('user')
 export class UserController {
 	constructor(private readonly userService: UserService) {}
 
+	@Public()
 	@Post('register')
 	async create(@Body() createUserDto: CreateUserDto) {
 		const checkEmail = await this.userService.findByEmail(createUserDto.email)
@@ -41,7 +42,6 @@ export class UserController {
 		return { message: 'User created' }
 	}
 
-	@UseGuards(AuthGuard)
 	@Patch('update-password')
 	async editMyAccount(@Body() body: UpdatePasswordDto, @Req() request) {
 		if (body.new_password !== body.confirm_password)
